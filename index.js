@@ -1,3 +1,5 @@
+// https://travelbudbackend.onrender.com
+
 const express= require("express");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const cors = require('cors');
@@ -119,6 +121,30 @@ const initEndpoints=async()=>{
         res.status(500).json({ message: 'Internal Server Error. Try Again Later' });
     }
     })
+
+    // ************ENDPOINT FOR ROUTE DELETION************
+    app.delete('/deleteroute', async (req, res) => {
+        const { id } = req.query;
+        const routes = client.db('TravelBudDatabase').collection('RoutesData');
+      
+        if (!id) {
+          return res.status(400).send('ID is required');
+        }
+      
+        try {
+          const result = await routes.deleteOne({ id: id });
+      
+          if (result.deletedCount === 1) {
+            res.status(200).send('Route deleted successfully');
+          } else {
+            res.status(404).send('Route not found');
+          }
+        } catch (error) {
+          console.error(error);
+          res.status(500).send('Internal Server Error');
+        }
+      });
+    
 
     // ************ENDPOINT FOR ADDING PARTICIPANTS************
     app.put('/addparticipant',async (req,res)=>{
